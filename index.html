@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Minha Rotina - Organização diária, cronograma pessoal e combate à procrastinação de forma minimalista e moderna.">
+    <title>Minha Rotina | Foco e Consistência</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="light-theme">
+    <!-- App Container -->
+    <div class="app-layout">
+        
+        <!-- Sidebar Navigation (Desktop) -->
+        <aside class="sidebar" id="sidebar">
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <i data-lucide="compass"></i>
+                </div>
+                <span class="logo-text">Minha Rotina</span>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="#dashboard" class="nav-link active" data-view="dashboard">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#rotina" class="nav-link" data-view="rotina">
+                    <i data-lucide="clock"></i>
+                    <span>Rotina Diária</span>
+                </a>
+                <a href="#tarefas" class="nav-link" data-view="tarefas">
+                    <i data-lucide="check-square"></i>
+                    <span>Tarefas</span>
+                </a>
+                <a href="#semana" class="nav-link" data-view="semana">
+                    <i data-lucide="calendar"></i>
+                    <span>Visão Semanal</span>
+                </a>
+                <a href="#foco" class="nav-link" data-view="foco">
+                    <i data-lucide="zap"></i>
+                    <span>Modo Foco</span>
+                </a>
+                <a href="#habitos" class="nav-link" data-view="habitos">
+                    <i data-lucide="flame"></i>
+                    <span>Hábitos</span>
+                </a>
+                <a href="#insights" class="nav-link" data-view="insights">
+                    <i data-lucide="bar-chart-2"></i>
+                    <span>Insights</span>
+                </a>
+                <a href="#configuracoes" class="nav-link" data-view="configuracoes">
+                    <i data-lucide="settings"></i>
+                    <span>Configurações</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="user-score-box">
+                    <i data-lucide="award" class="gold-icon"></i>
+                    <div>
+                        <div class="score-label">Pontos de Foco</div>
+                        <div class="score-value" id="user-points">0 XP</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="main-wrapper">
+            <header class="app-header">
+                <div class="header-info">
+                    <h1 id="page-title">Dashboard</h1>
+                    <p class="current-date" id="header-date">Carregando data...</p>
+                </div>
+                
+                <div class="header-actions">
+                    <!-- Quick Score for Mobile -->
+                    <div class="mobile-score-badge">
+                        <i data-lucide="award"></i>
+                        <span id="mobile-points">0 XP</span>
+                    </div>
+                    
+                    <button class="theme-toggle-btn" id="theme-toggle" aria-label="Alternar Tema">
+                        <i data-lucide="moon" class="dark-icon"></i>
+                        <i data-lucide="sun" class="light-icon" style="display: none;"></i>
+                    </button>
+                </div>
+            </header>
+
+            <main class="content-container" id="main-content">
+                <!-- Dynamically Rendered SPA Views go here -->
+            </main>
+        </div>
+
+        <!-- Bottom Navigation (Mobile) -->
+        <nav class="bottom-nav">
+            <a href="#dashboard" class="bottom-link active" data-view="dashboard">
+                <i data-lucide="layout-dashboard"></i>
+                <span>Início</span>
+            </a>
+            <a href="#rotina" class="bottom-link" data-view="rotina">
+                <i data-lucide="clock"></i>
+                <span>Rotina</span>
+            </a>
+            <a href="#tarefas" class="bottom-link" data-view="tarefas">
+                <i data-lucide="check-square"></i>
+                <span>Tarefas</span>
+            </a>
+            <a href="#foco" class="bottom-link" data-view="foco">
+                <i data-lucide="zap"></i>
+                <span>Foco</span>
+            </a>
+            <a href="#more" class="bottom-link" id="bottom-more-btn">
+                <i data-lucide="menu"></i>
+                <span>Mais</span>
+            </a>
+        </nav>
+
+        <!-- Bottom Sheet Menu for Mobile "Mais" options -->
+        <div class="bottom-sheet" id="bottom-sheet">
+            <div class="bottom-sheet-overlay" id="bottom-sheet-overlay"></div>
+            <div class="bottom-sheet-content">
+                <div class="bottom-sheet-handle"></div>
+                <div class="bottom-sheet-grid">
+                    <a href="#semana" class="sheet-item" data-view="semana">
+                        <div class="sheet-icon"><i data-lucide="calendar"></i></div>
+                        <span>Semana</span>
+                    </a>
+                    <a href="#habitos" class="sheet-item" data-view="habitos">
+                        <div class="sheet-icon"><i data-lucide="flame"></i></div>
+                        <span>Hábitos</span>
+                    </a>
+                    <a href="#insights" class="sheet-item" data-view="insights">
+                        <div class="sheet-icon"><i data-lucide="bar-chart-2"></i></div>
+                        <span>Insights</span>
+                    </a>
+                    <a href="#configuracoes" class="sheet-item" data-view="configuracoes">
+                        <div class="sheet-icon"><i data-lucide="settings"></i></div>
+                        <span>Ajustes</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- GLOBAL MODALS -->
+
+    <!-- Procrastination Modal (Modal de Adiamento) -->
+    <div class="modal" id="procrastination-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Compreendendo o Adiamento</h3>
+                <button class="close-modal-btn" data-close="procrastination-modal"><i data-lucide="x"></i></button>
+            </div>
+            <form id="procrastination-form">
+                <input type="hidden" id="procrastinating-task-id" value="">
+                <input type="hidden" id="procrastinating-task-type" value="tarefa"> <!-- tarefa ou rotina -->
+                
+                <p class="modal-intro-text">
+                    Tudo bem adiar! Às vezes é necessário. Para te ajudar a mapear sua produtividade, nos diga: <strong>por que esta tarefa está sendo adiada?</strong>
+                </p>
+                
+                <div class="form-group">
+                    <label class="form-label">Motivo principal</label>
+                    <div class="reasons-radio-grid">
+                        <label class="reason-card">
+                            <input type="radio" name="procrastination-reason" value="energy" required>
+                            <span class="reason-card-content">
+                                <i data-lucide="battery-low"></i>
+                                <span>Falta de energia / Cansaço</span>
+                            </span>
+                        </label>
+                        <label class="reason-card">
+                            <input type="radio" name="procrastination-reason" value="time">
+                            <span class="reason-card-content">
+                                <i data-lucide="calendar-off"></i>
+                                <span>Falta de tempo</span>
+                            </span>
+                        </label>
+                        <label class="reason-card">
+                            <input type="radio" name="procrastination-reason" value="difficulty">
+                            <span class="reason-card-content">
+                                <i data-lucide="help-circle"></i>
+                                <span>Tarefa difícil / Complexa</span>
+                            </span>
+                        </label>
+                        <label class="reason-card">
+                            <input type="radio" name="procrastination-reason" value="distraction">
+                            <span class="reason-card-content">
+                                <i data-lucide="smartphone"></i>
+                                <span>Distração / Perda de foco</span>
+                            </span>
+                        </label>
+                        <label class="reason-card">
+                            <input type="radio" name="procrastination-reason" value="other">
+                            <span class="reason-card-content">
+                                <i data-lucide="more-horizontal"></i>
+                                <span>Outro motivo</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group margin-top-m">
+                    <label for="procrastination-comment" class="form-label">Observações (opcional)</label>
+                    <textarea id="procrastination-comment" class="form-control" rows="2" placeholder="O que aconteceu? Ex: Tive um imprevisto, estou com dor de cabeça..."></textarea>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline" data-close="procrastination-modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Registrar e Adiar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Routine Block Modal (Add/Edit) -->
+    <div class="modal" id="routine-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="routine-modal-title">Novo Bloco de Horário</h3>
+                <button class="close-modal-btn" data-close="routine-modal"><i data-lucide="x"></i></button>
+            </div>
+            <form id="routine-form">
+                <input type="hidden" id="routine-id" value="">
+                
+                <div class="form-group">
+                    <label for="routine-name" class="form-label">Nome da Atividade</label>
+                    <input type="text" id="routine-name" class="form-control" placeholder="Ex: Academia, Trabalho focado, Leitura..." required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group col-6">
+                        <label for="routine-start" class="form-label">Horário de Início</label>
+                        <input type="time" id="routine-start" class="form-control" required>
+                    </div>
+                    <div class="form-group col-6">
+                        <label for="routine-end" class="form-label">Horário de Fim</label>
+                        <input type="time" id="routine-end" class="form-control" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group col-6">
+                        <label for="routine-category" class="form-label">Categoria</label>
+                        <select id="routine-category" class="form-control" required>
+                            <option value="trabalho">Trabalho</option>
+                            <option value="estudos">Estudos</option>
+                            <option value="saude">Saúde</option>
+                            <option value="casa">Casa</option>
+                            <option value="lazer">Lazer</option>
+                            <option value="desenvolvimento">Dev. Pessoal</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-6">
+                        <label for="routine-priority" class="form-label">Prioridade</label>
+                        <select id="routine-priority" class="form-control" required>
+                            <option value="baixa">Baixa</option>
+                            <option value="media" selected>Média</option>
+                            <option value="alta">Alta</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline" data-close="routine-modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Bloco</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Task Modal (Add/Edit) -->
+    <div class="modal" id="task-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="task-modal-title">Nova Tarefa Avulsa</h3>
+                <button class="close-modal-btn" data-close="task-modal"><i data-lucide="x"></i></button>
+            </div>
+            <form id="task-form">
+                <input type="hidden" id="task-id" value="">
+                
+                <div class="form-group">
+                    <label for="task-title" class="form-label">Título da Tarefa</label>
+                    <input type="text" id="task-title" class="form-control" placeholder="Ex: Comprar leite, Enviar relatório para o chefe..." required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="task-desc" class="form-label">Descrição (opcional)</label>
+                    <textarea id="task-desc" class="form-control" rows="2" placeholder="Detalhes adicionais..."></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group col-6">
+                        <label for="task-date" class="form-label">Data de Vencimento</label>
+                        <input type="date" id="task-date" class="form-control" required>
+                    </div>
+                    <div class="form-group col-6">
+                        <label for="task-priority" class="form-label">Prioridade</label>
+                        <select id="task-priority" class="form-control" required>
+                            <option value="baixa">Baixa</option>
+                            <option value="media" selected>Média</option>
+                            <option value="alta">Alta</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline" data-close="task-modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Tarefa</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Achievement Unlocked Modal -->
+    <div class="modal" id="achievement-modal">
+        <div class="modal-overlay" id="achievement-overlay"></div>
+        <div class="modal-content achievement-unlocked-content text-center">
+            <div class="celebration-confetti">🎉</div>
+            <h3 class="achievement-title">Conquista Desbloqueada!</h3>
+            <div class="badge-icon-container">
+                <i data-lucide="award" class="unlocked-badge-icon"></i>
+            </div>
+            <h4 id="achievement-name">Primeiro Passo</h4>
+            <p id="achievement-desc">Você organizou sua rotina pela primeira vez.</p>
+            <div class="xp-reward">+50 XP</div>
+            <button class="btn btn-primary btn-full margin-top-m" data-close="achievement-modal">Excelente!</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
