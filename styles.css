@@ -1684,4 +1684,11 @@ body.dark-theme .modal-overlay {
         width: 85%;
         margin-right: 12px;
     }
+    /* Correção para ícones que somem ao clicar */
+button i, 
+button svg, 
+.task-actions button *, 
+.timeline-actions button * {
+    pointer-events: none;
+}
 }
