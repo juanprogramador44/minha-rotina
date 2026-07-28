@@ -2,6 +2,24 @@
    MINHA ROTINA - STATE & DATABASE PERSISTENCE (STORE)
    ========================================================================== */
 
+// Adicione o campo 'categoria' e um estado para a categoria ativa
+const state = {
+  tarefas: [
+    {
+      id: "1",
+      titulo: "PEDIDO DE COMPRA PERTO ATM's",
+      descricao: "e-mail enviado para a PERTO",
+      prioridade: "media", // alta, media, baixa
+      status: "pendente", // pendente, concluida
+      categoria: "trabalho", // casa, trabalho, academia, etc.
+      dataCriacao: "2026-07-21"
+    }
+  ],
+  categoriaFiltro: "todas", // "todas", "trabalho", "casa", etc.
+  ordenacaoFiltro: "data-desc" // "data-desc", "data-asc", "prioridade-alta"
+};
+
+
 // Default achievements
 const DEFAULT_ACHIEVEMENTS = [
     { id: 'first_block', name: 'Primeiro Bloco', desc: 'Criou o primeiro bloco de rotina.', xp: 50, icon: 'clock', unlocked: false },
