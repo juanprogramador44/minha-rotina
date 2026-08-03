@@ -2,9 +2,6 @@
    MINHA ROTINA - SPA ROUTING & APP ENTRY POINT
    ========================================================================== */
 
-import { renderView } from './ui.js';
-import { store } from './store.js';
-import { formatDate } from './utils.js';
 
 // SPA Routing Handler
 function handleRouting() {

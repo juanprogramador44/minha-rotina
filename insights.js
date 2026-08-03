@@ -3,7 +3,7 @@
    ========================================================================== */
 
 // Translate reasons keys to Portuguese readable labels
-export const REASON_LABELS = {
+const REASON_LABELS = {
     energy: 'Falta de energia / Cansaço',
     time: 'Falta de tempo',
     difficulty: 'Tarefa difícil / Complexa',
@@ -26,7 +26,7 @@ const CATEGORY_LABELS = {
  * @param {Array} logs - The logs of procrastination
  * @returns {Array} List of reasons with count and percentage
  */
-export function getProcrastinationDistribution(logs) {
+function getProcrastinationDistribution(logs) {
     if (!logs || logs.length === 0) return [];
 
     const counts = { energy: 0, time: 0, difficulty: 0, distraction: 0, other: 0 };
@@ -54,7 +54,7 @@ export function getProcrastinationDistribution(logs) {
  * @param {Array} routine - Routine blocks
  * @returns {Object|null} The category details
  */
-export function getMostProcrastinatedCategory(logs, tasks, routine) {
+function getMostProcrastinatedCategory(logs, tasks, routine) {
     if (!logs || logs.length === 0) return null;
 
     const categoryCounts = {};
@@ -110,7 +110,7 @@ export function getMostProcrastinatedCategory(logs, tasks, routine) {
  * @param {Array} routine - All routine blocks
  * @returns {Object} Rate and count details
  */
-export function getCompletionRateLast7Days(tasks, routine) {
+function getCompletionRateLast7Days(tasks, routine) {
     const today = new Date();
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(today.getDate() - 7);
@@ -146,7 +146,7 @@ export function getCompletionRateLast7Days(tasks, routine) {
  * @param {Array} routine - Routine blocks list (since they have fixed hours)
  * @returns {String} Morning, Afternoon, Evening or Night
  */
-export function getMostProductivePeriod(routine) {
+function getMostProductivePeriod(routine) {
     const completedBlocks = routine.filter(r => r.status === 'concluido');
     if (completedBlocks.length === 0) return 'Manhã (Padrão)';
 

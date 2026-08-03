@@ -2,10 +2,6 @@
    MINHA ROTINA - USER INTERFACE RENDERING & INTERACTION CONTROLLER
    ========================================================================== */
 
-import { store } from './store.js';
-import { getRandomQuote, formatDate, playChime } from './utils.js';
-import { getProcrastinationDistribution, getMostProcrastinatedCategory, getCompletionRateLast7Days, getMostProductivePeriod } from './insights.js';
-
 // Timer state (persists in memory between view swaps)
 let timerInterval = null;
 let timerSecondsLeft = 25 * 60;
@@ -18,7 +14,7 @@ let timerSelectedTaskType = 'tarefa'; // 'tarefa' or 'rotina'
 // Weekly navigation state
 let currentWeekOffset = 0; // 0 is current week, -1 is last week, 1 is next week
 
-export function renderView(viewName) {
+function renderView(viewName) {
     const mainContent = document.getElementById('main-content');
     if (!mainContent) return;
 
@@ -438,15 +434,77 @@ function showProcrastinationModal(id, title, type) {
 function renderTasks(container) {
     let currentFilter = 'todas';
 
+    // Renders the list of tasks grouped by category
     const renderList = () => {
         const state = store.state;
         let tasks = state.tarefas;
 
         // Apply tab filter
-        if (currentFilter === 'pendentes') {
+        if (currentFilter === 'todas') {
+            tasks = tasks.filter(t => t.status !== 'concluido');
+        } else if (currentFilter === 'pendentes') {
             tasks = tasks.filter(t => t.status !== 'concluido');
         } else if (currentFilter === 'concluidas') {
             tasks = tasks.filter(t => t.status === 'concluido');
+        }
+
+        // Apply search and filter inputs
+        const searchInput = container.querySelector('#task-search-input');
+        const priorityFilter = container.querySelector('#task-priority-filter');
+        const dateFilter = container.querySelector('#task-date-filter');
+        const categoryFilter = container.querySelector('#task-category-filter');
+
+        const searchText = (searchInput ? searchInput.value : '').toLowerCase();
+        const prioVal = priorityFilter ? priorityFilter.value : '';
+        const dateVal = dateFilter ? dateFilter.value : '';
+        const catVal = categoryFilter ? categoryFilter.value : '';
+
+        // Filter tasks
+        tasks = tasks.filter(t => {
+            // Text search
+            if (searchText) {
+                const matchTitle = t.title.toLowerCase().includes(searchText);
+                const matchDesc = (t.desc || '').toLowerCase().includes(searchText);
+                if (!matchTitle && !matchDesc) return false;
+            }
+            // Priority
+            if (prioVal && t.priority !== prioVal) return false;
+            // Category/Section
+            const itemCat = t.category || 'Geral';
+            if (catVal && itemCat !== catVal) return false;
+            // Date
+            if (dateVal) {
+                const todayStr = new Date().toISOString().split('T')[0];
+                const tDate = t.date;
+                if (dateVal === 'hoje') {
+                    if (tDate !== todayStr) return false;
+                } else if (dateVal === 'semana') {
+                    const today = new Date();
+                    const endOfWeek = new Date();
+                    endOfWeek.setDate(today.getDate() + 7);
+                    const taskDate = new Date(tDate);
+                    const isWithin = taskDate >= new Date(today.setHours(0,0,0,0)) && taskDate <= endOfWeek;
+                    if (!isWithin) return false;
+                } else if (dateVal === 'atrasadas') {
+                    if (tDate >= todayStr || t.status === 'concluido') return false;
+                }
+            }
+            return true;
+        });
+
+        // Dynamic categories for the filter dropdown
+        if (categoryFilter) {
+            const currentSelected = categoryFilter.value;
+            const uniqueCategories = [...new Set(state.tarefas.map(t => t.category || 'Geral'))].sort();
+            
+            // Re-populate only if number of items changed or first load
+            let currentOpts = Array.from(categoryFilter.options).map(o => o.value);
+            let targetOpts = ['', ...uniqueCategories];
+            if (JSON.stringify(currentOpts) !== JSON.stringify(targetOpts)) {
+                categoryFilter.innerHTML = '<option value="">Todas</option>' + uniqueCategories.map(c => `
+                    <option value="${c}" ${currentSelected === c ? 'selected' : ''}>${c}</option>
+                `).join('');
+            }
         }
 
         // Sort: Alta -> Média -> Baixa, then date
@@ -458,7 +516,7 @@ function renderTasks(container) {
             return a.date.localeCompare(b.date);
         });
 
-        const listContainer = container.querySelector('.task-list');
+        const listContainer = container.querySelector('#tasks-sections-container');
         if (!listContainer) return;
 
         if (tasks.length === 0) {
@@ -472,38 +530,61 @@ function renderTasks(container) {
             return;
         }
 
-        listContainer.innerHTML = tasks.map(task => {
-            const isCompleted = task.status === 'concluido';
+        // Group tasks by category
+        const groups = {};
+        tasks.forEach(t => {
+            const cat = t.category || 'Geral';
+            if (!groups[cat]) groups[cat] = [];
+            groups[cat].push(t);
+        });
+
+        // Render sections (like Excel)
+        listContainer.innerHTML = Object.keys(groups).sort().map(sectionName => {
+            const sectionTasks = groups[sectionName];
             return `
-                <div class="task-item ${isCompleted ? 'completed' : ''}">
-                    <div class="task-checkbox-wrapper">
-                        <div class="task-checkbox toggle-task-checkbox" data-id="${task.id}">
-                            <i data-lucide="check"></i>
-                        </div>
+                <div class="task-section" style="margin-bottom: 28px;">
+                    <div style="font-weight: 700; font-size: 1.1rem; color: var(--primary); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px;">
+                        <i data-lucide="folder" style="width: 18px; height: 18px;"></i>
+                        <span>${sectionName}</span>
+                        <span class="badge badge-low" style="font-size: 0.7rem; font-weight: 600; padding: 2px 8px; margin-left: auto;">${sectionTasks.length} ${sectionTasks.length === 1 ? 'tarefa' : 'tarefas'}</span>
                     </div>
-                    <div class="task-details">
-                        <div class="task-title-text">${task.title}</div>
-                        ${task.desc ? `<div class="task-desc-text">${task.desc}</div>` : ''}
-                        
-                        <div class="task-meta">
-                            <span class="badge badge-${task.priority}">Prioridade: ${task.priority}</span>
-                            <span class="task-meta-item"><i data-lucide="calendar" style="width: 12px; height: 12px;"></i> ${task.date}</span>
-                            <span class="badge badge-${task.status}">${task.status}</span>
-                        </div>
-                    </div>
-                    
-                    <div class="task-actions">
-                        ${!isCompleted ? `
-                            <button class="btn btn-outline btn-sm btn-icon procrastinate-task-btn" data-id="${task.id}" data-title="${task.title}" title="Adiar tarefa">
-                                <i data-lucide="corner-down-right" style="color: var(--danger);"></i>
-                            </button>
-                        ` : ''}
-                        <button class="btn btn-outline btn-sm btn-icon edit-task-btn" data-id="${task.id}">
-                            <i data-lucide="edit-3"></i>
-                        </button>
-                        <button class="btn btn-outline btn-sm btn-icon delete-task-btn" data-id="${task.id}">
-                            <i data-lucide="trash-2" style="color: var(--danger);"></i>
-                        </button>
+                    <div class="task-list" style="display: flex; flex-direction: column; gap: 12px;">
+                        ${sectionTasks.map(task => {
+                            const isCompleted = task.status === 'concluido';
+                            return `
+                                <div class="task-item ${isCompleted ? 'completed' : ''}">
+                                    <div class="task-checkbox-wrapper">
+                                        <div class="task-checkbox toggle-task-checkbox" data-id="${task.id}">
+                                            <i data-lucide="check"></i>
+                                        </div>
+                                    </div>
+                                    <div class="task-details">
+                                        <div class="task-title-text">${task.title}</div>
+                                        ${task.desc ? `<div class="task-desc-text">${task.desc}</div>` : ''}
+                                        
+                                        <div class="task-meta">
+                                            <span class="badge badge-${task.priority}">Prioridade: ${task.priority}</span>
+                                            <span class="task-meta-item"><i data-lucide="calendar" style="width: 12px; height: 12px;"></i> ${task.date}</span>
+                                            <span class="badge badge-${task.status}">${task.status}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="task-actions">
+                                        ${!isCompleted ? `
+                                            <button class="btn btn-outline btn-sm btn-icon procrastinate-task-btn" data-id="${task.id}" data-title="${task.title}" title="Adiar tarefa">
+                                                <i data-lucide="corner-down-right" style="color: var(--danger);"></i>
+                                            </button>
+                                        ` : ''}
+                                        <button class="btn btn-outline btn-sm btn-icon edit-task-btn" data-id="${task.id}">
+                                            <i data-lucide="edit-3"></i>
+                                        </button>
+                                        <button class="btn btn-outline btn-sm btn-icon delete-task-btn" data-id="${task.id}">
+                                            <i data-lucide="trash-2" style="color: var(--danger);"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
                     </div>
                 </div>
             `;
@@ -542,6 +623,7 @@ function renderTasks(container) {
                     document.getElementById('task-desc').value = task.desc;
                     document.getElementById('task-date').value = task.date;
                     document.getElementById('task-priority').value = task.priority;
+                    document.getElementById('task-category').value = task.category || 'Geral';
                     taskModal.classList.add('active');
                 }
             });
@@ -573,8 +655,56 @@ function renderTasks(container) {
             </button>
         </div>
 
-        <div class="task-list"></div>
+        <!-- FILTROS DE TAREFAS -->
+        <div class="card" style="padding: 16px; margin-bottom: 24px;">
+            <div class="form-row" style="flex-wrap: wrap; gap: 16px; margin-bottom: 0; align-items: flex-end;">
+                <div class="form-group" style="flex: 1; min-width: 200px; margin-bottom: 0;">
+                    <label class="form-label" style="margin-bottom: 6px;">Pesquisar</label>
+                    <div style="position: relative;">
+                        <input type="text" id="task-search-input" class="form-control" placeholder="Buscar por título ou descrição..." style="padding-left: 36px;">
+                        <i data-lucide="search" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--text-secondary);"></i>
+                    </div>
+                </div>
+                <div class="form-group" style="width: 140px; margin-bottom: 0;">
+                    <label class="form-label" style="margin-bottom: 6px;">Prioridade</label>
+                    <select id="task-priority-filter" class="form-control">
+                        <option value="">Todas</option>
+                        <option value="baixa">Baixa</option>
+                        <option value="media">Média</option>
+                        <option value="alta">Alta</option>
+                    </select>
+                </div>
+                <div class="form-group" style="width: 140px; margin-bottom: 0;">
+                    <label class="form-label" style="margin-bottom: 6px;">Data</label>
+                    <select id="task-date-filter" class="form-control">
+                        <option value="">Todas</option>
+                        <option value="hoje">Hoje</option>
+                        <option value="semana">Esta Semana</option>
+                        <option value="atrasadas">Atrasadas</option>
+                    </select>
+                </div>
+                <div class="form-group" style="width: 160px; margin-bottom: 0;">
+                    <label class="form-label" style="margin-bottom: 6px;">Seção / Categoria</label>
+                    <select id="task-category-filter" class="form-control">
+                        <option value="">Todas</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div id="tasks-sections-container"></div>
     `;
+
+    // Hook filters event listeners
+    const searchInput = container.querySelector('#task-search-input');
+    const priorityFilter = container.querySelector('#task-priority-filter');
+    const dateFilter = container.querySelector('#task-date-filter');
+    const categoryFilter = container.querySelector('#task-category-filter');
+
+    if (searchInput) searchInput.addEventListener('input', renderList);
+    if (priorityFilter) priorityFilter.addEventListener('change', renderList);
+    if (dateFilter) dateFilter.addEventListener('change', renderList);
+    if (categoryFilter) categoryFilter.addEventListener('change', renderList);
 
     // Hook tab switches
     container.querySelectorAll('.filter-tab').forEach(tab => {
@@ -593,7 +723,6 @@ function renderTasks(container) {
         document.getElementById('task-modal-title').textContent = "Nova Tarefa Avulsa";
         taskForm.reset();
         document.getElementById('task-id').value = '';
-        // Pre-fill today's date
         document.getElementById('task-date').value = new Date().toISOString().split('T')[0];
         taskModal.classList.add('active');
     });
@@ -606,7 +735,8 @@ function renderTasks(container) {
             title: document.getElementById('task-title').value,
             desc: document.getElementById('task-desc').value,
             date: document.getElementById('task-date').value,
-            priority: document.getElementById('task-priority').value
+            priority: document.getElementById('task-priority').value,
+            category: document.getElementById('task-category').value || 'Geral'
         };
 
         if (id) {

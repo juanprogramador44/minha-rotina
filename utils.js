@@ -13,7 +13,7 @@ const MOTIVATIONAL_QUOTES = [
 ];
 
 // Sound Synthesizer via Web Audio API
-export function playChime(type = 'success') {
+function playChime(type = 'success') {
     try {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         if (!AudioContext) return;
@@ -47,13 +47,13 @@ export function playChime(type = 'success') {
 }
 
 // Global Motivational Quotes Selector
-export function getRandomQuote() {
+function getRandomQuote() {
     const idx = Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length);
     return MOTIVATIONAL_QUOTES[idx];
 }
 
 // Format date in Portuguese
-export function formatDate(date) {
+function formatDate(date) {
     const options = { weekday: 'long', day: 'numeric', month: 'long' };
     let d = date.toLocaleDateString('pt-BR', options);
     return d.split(' ').map(word => {

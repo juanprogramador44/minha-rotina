@@ -2,24 +2,6 @@
    MINHA ROTINA - STATE & DATABASE PERSISTENCE (STORE)
    ========================================================================== */
 
-// Adicione o campo 'categoria' e um estado para a categoria ativa
-const state = {
-  tarefas: [
-    {
-      id: "1",
-      titulo: "PEDIDO DE COMPRA PERTO ATM's",
-      descricao: "e-mail enviado para a PERTO",
-      prioridade: "media", // alta, media, baixa
-      status: "pendente", // pendente, concluida
-      categoria: "trabalho", // casa, trabalho, academia, etc.
-      dataCriacao: "2026-07-21"
-    }
-  ],
-  categoriaFiltro: "todas", // "todas", "trabalho", "casa", etc.
-  ordenacaoFiltro: "data-desc" // "data-desc", "data-asc", "prioridade-alta"
-};
-
-
 // Default achievements
 const DEFAULT_ACHIEVEMENTS = [
     { id: 'first_block', name: 'Primeiro Bloco', desc: 'Criou o primeiro bloco de rotina.', xp: 50, icon: 'clock', unlocked: false },
@@ -49,10 +31,10 @@ const DEFAULT_STATE = {
         { id: 'r6', start: '20:00', end: '22:00', name: 'Filme / Lazer', category: 'lazer', priority: 'baixa', status: 'pendente' }
     ],
     tarefas: [
-        { id: 't1', title: 'Enviar relatório semanal para gerente', desc: 'Incluir métricas de conversão e relatórios de erros.', priority: 'alta', date: new Date().toISOString().split('T')[0], status: 'pendente' },
-        { id: 't2', title: 'Comprar presentes de aniversário', desc: 'Lembrar de comprar embalagem.', priority: 'media', date: new Date().toISOString().split('T')[0], status: 'pendente' },
-        { id: 't3', title: 'Pagar conta de energia elétrica', desc: 'Vence esta semana.', priority: 'alta', date: new Date(Date.now() + 86400000).toISOString().split('T')[0], status: 'pendente' },
-        { id: 't4', title: 'Organizar gaveta de documentos', desc: '', priority: 'baixa', date: new Date(Date.now() - 86400000).toISOString().split('T')[0], status: 'concluido' }
+        { id: 't1', title: 'Enviar relatório semanal para gerente', desc: 'Incluir métricas de conversão e relatórios de erros.', priority: 'alta', date: new Date().toISOString().split('T')[0], status: 'pendente', category: 'Demandas trabalho' },
+        { id: 't2', title: 'Comprar presentes de aniversário', desc: 'Lembrar de comprar embalagem.', priority: 'media', date: new Date().toISOString().split('T')[0], status: 'pendente', category: 'Geral' },
+        { id: 't3', title: 'Pagar conta de energia elétrica', desc: 'Vence esta semana.', priority: 'alta', date: new Date(Date.now() + 86400000).toISOString().split('T')[0], status: 'pendente', category: 'Casa' },
+        { id: 't4', title: 'Organizar gaveta de documentos', desc: '', priority: 'baixa', date: new Date(Date.now() - 86400000).toISOString().split('T')[0], status: 'concluido', category: 'Casa' }
     ],
     habitos: [
         { id: 'h1', name: 'Beber 2.5L de Água', category: 'saude', streak: 3, lastDone: new Date().toISOString().split('T')[0], history: [new Date().toISOString().split('T')[0], new Date(Date.now() - 86400000).toISOString().split('T')[0], new Date(Date.now() - 172800000).toISOString().split('T')[0]] },
@@ -304,4 +286,4 @@ class Store {
     }
 }
 
-export const store = new Store();
+const store = new Store();
